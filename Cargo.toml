@@ -20,7 +20,7 @@ include = [
     "README.md",
     "CHANGELOG.md",
 ]
-rust-version = "1.73.0"
+rust-version = "1.74.0"
 
 [dependencies]
 aws-lc-rs = { version = "1.8.1", default-features = false, features = ["aws-lc-sys"] }
