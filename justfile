@@ -31,3 +31,9 @@ test-examples:
 	cargo test --examples
 
 qa: lint check clippy doc test test-examples
+
+upgrades:
+    cargo upgrades
+
+bench:
+	cargo bench
