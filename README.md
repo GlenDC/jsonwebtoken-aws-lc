@@ -17,6 +17,10 @@ switching to [aws-lc-rs] given [rustls] et al made that move clear.
 
 See [JSON Web Tokens](https://en.wikipedia.org/wiki/JSON_Web_Token) for more information on what JSON Web Tokens are.
 
+> `jsonwebtoken` (the original) did all the had work,
+> and [Vincent Prouillet](https://www.vincentprouillet.com/) and his contributors
+> deserve all the credit. Go give them some love if you like `jsonwebtoken-aws-lc`.
+
 ## Installation
 Add the following to Cargo.toml:
 
