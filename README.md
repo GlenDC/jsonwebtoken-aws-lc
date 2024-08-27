@@ -4,12 +4,16 @@
 
 Temporary fork of <https://github.com/Keats/jsonwebtoken/tree/v9.3.0>
 
-- swap ring with aws-lc-rs
-- remove wasm32 support (feel free to contribute it)
+- swap [ring] with [aws-lc-rs]
+- remove `wasm32` support (feel free to contribute it)
 
 Goal is not to have a permanent fork,
 but instead to provide a tmp unblocker for people already
-switching to aws-lc-rs given rustls et al made that move clear.
+switching to [aws-lc-rs] given [rustls] et al made that move clear.
+
+[aws-lc-rs]: https://docs.rs/aws-lc-rs/latest/aws_lc_rs/
+[rustls]: https://docs.rs/rustls/latest/rustls/
+[ring]: https://docs.rs/ring/latest/ring/
 
 See [JSON Web Tokens](https://en.wikipedia.org/wiki/JSON_Web_Token) for more information on what JSON Web Tokens are.
 
