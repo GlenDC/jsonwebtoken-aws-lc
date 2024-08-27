@@ -1,7 +1,7 @@
 #![allow(missing_docs)]
 //! This crate contains types only for working JWK and JWK Sets
 //! This is only meant to be used to deal with public JWK, not generate ones.
-//! Most of the code in this file is taken from https://github.com/lawliet89/biscuit but
+//! Most of the code in this file is taken from <https://github.com/lawliet89/biscuit> but
 //! tweaked to remove the private bits as it's not the goal for this crate currently.
 
 use crate::{
@@ -439,10 +439,8 @@ mod tests {
     use crate::serialization::b64_encode;
     use crate::Algorithm;
     use serde_json::json;
-    use wasm_bindgen_test::wasm_bindgen_test;
 
     #[test]
-    #[wasm_bindgen_test]
     fn check_hs256() {
         let key = b64_encode("abcdefghijklmnopqrstuvwxyz012345");
         let jwks_json = json!({

@@ -1,7 +1,10 @@
-use jsonwebtoken::{
+use aws_lc_rs::{
+    rand::SystemRandom,
+    signature::{Ed25519KeyPair, KeyPair},
+};
+use jsonwebtoken_aws_lc::{
     decode, encode, get_current_timestamp, Algorithm, DecodingKey, EncodingKey, Validation,
 };
-use ring::signature::{Ed25519KeyPair, KeyPair};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -11,7 +14,8 @@ pub struct Claims {
 }
 
 fn main() {
-    let doc = Ed25519KeyPair::generate_pkcs8(&ring::rand::SystemRandom::new()).unwrap();
+    let rng = SystemRandom::new();
+    let doc = Ed25519KeyPair::generate_pkcs8(&rng).unwrap();
     let encoding_key = EncodingKey::from_ed_der(doc.as_ref());
 
     let pair = Ed25519KeyPair::from_pkcs8(doc.as_ref()).unwrap();
@@ -19,8 +23,8 @@ fn main() {
 
     let claims = Claims { sub: "test".to_string(), exp: get_current_timestamp() };
 
-    let token =
-        encode(&jsonwebtoken::Header::new(Algorithm::EdDSA), &claims, &encoding_key).unwrap();
+    let token = encode(&jsonwebtoken_aws_lc::Header::new(Algorithm::EdDSA), &claims, &encoding_key)
+        .unwrap();
 
     let validation = Validation::new(Algorithm::EdDSA);
     let _token_data = decode::<Claims>(&token, &decoding_key, &validation).unwrap();
@@ -37,7 +41,8 @@ mod tests {
 
     impl Jot {
         fn new() -> Jot {
-            let doc = Ed25519KeyPair::generate_pkcs8(&ring::rand::SystemRandom::new()).unwrap();
+            let rng = SystemRandom::new();
+            let doc = Ed25519KeyPair::generate_pkcs8(&rng).unwrap();
             let encoding_key = EncodingKey::from_ed_der(doc.as_ref());
 
             let pair = Ed25519KeyPair::from_pkcs8(doc.as_ref()).unwrap();
@@ -52,7 +57,7 @@ mod tests {
         let claims = Claims { sub: "test".to_string(), exp: get_current_timestamp() };
 
         let token =
-            encode(&jsonwebtoken::Header::new(Algorithm::EdDSA), &claims, &jot.encoding_key)
+            encode(&jsonwebtoken_aws_lc::Header::new(Algorithm::EdDSA), &claims, &jot.encoding_key)
                 .unwrap();
 
         let validation = Validation::new(Algorithm::EdDSA);

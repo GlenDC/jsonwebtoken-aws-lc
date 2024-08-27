@@ -1,83 +1,270 @@
-name: ci
+name: CI
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_TOOLCHAIN: stable
+  RUST_TOOLCHAIN_NIGHTLY: nightly
+  RUST_TOOLCHAIN_MSRV: 1.73.0
+  RUST_TOOLCHAIN_BETA: beta
+
 on:
   push:
     branches:
-      - master
-  pull_request:
+      - main
+  pull_request: {}
 
 jobs:
-  style:
-    name: Format
+  check-msrv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
-      - name: Check format
-        run: cargo fmt --check
-
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: clippy
-      - run: cargo clippy --all-targets --all-features -- -D warnings
+          toolchain: ${{env.RUST_TOOLCHAIN_MSRV}}
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: check
+        run: |
+          cargo check --all --all-targets
+      - name: clippy
+        run: |
+          cargo clippy --all --all-targets
+      - name: rustfmt
+        run: |
+          cargo fmt --all -- --check
 
-  tests:
-    name: Tests
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        build: [pinned, stable, nightly]
-        include:
-          - build: pinned
-            os: ubuntu-20.04
-            rust: 1.73.0
-          - build: stable
-            os: ubuntu-20.04
-            rust: stable
-          - build: nightly
-            os: ubuntu-20.04
-            rust: nightly
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust }}
-
-      - name: Build System Info
-        run: rustc --version
-
-      - name: Run tests default features
-        run: cargo test
-
-      - name: Run tests no features
-        run: cargo test --no-default-features
-
-  wasm:
-    name: Run tests in wasm
+  check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: wasm32-unknown-unknown
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: check
+        run: |
+          cargo check --all --all-targets
+      - name: clippy
+        run: |
+          cargo clippy --all --all-targets
+      - name: rustfmt
+        run: |
+          cargo fmt --all -- --check
 
-      - uses: actions/setup-node@v4
+  check-all-features:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: check
+        run: |
+          cargo check --all --all-targets --all-features
+      - name: clippy
+        run: |
+          cargo clippy --all --all-targets --all-features
+      - name: rustfmt
+        run: |
+          cargo fmt --all -- --check
 
-      - name: Install wasm-pack
-        run: cargo install wasm-pack
+  test-msrv:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN_MSRV}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run tests
+        run: cargo test
 
-      - name: Run tests default features
-        run: wasm-pack test --node
+  test-beta:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN_BETA}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run tests
+        run: cargo test
 
-      - name: Run tests no features
-        run: wasm-pack test --node --no-default-features
+  test:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run tests
+        run: cargo test
 
+  test-all-features:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run tests
+        run: cargo test --all-features
+
+  test-macos-msrv:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN_MSRV}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run tests
+        run: cargo test
+
+  test-macos-beta:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN_MSRV}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run tests
+        run: cargo test
+
+  test-macos:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run tests
+        run: cargo test
+
+  test-docs:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run doc tests
+        run: cargo test --doc
+
+  test-examples-beta:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN_BETA}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run doc tests
+        run: cargo test --examples
+
+  test-examples-msrv:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN_MSRV}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run doc tests
+        run: cargo test --examples
+
+  test-examples:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run doc tests
+        run: cargo test --examples
+
+  test-examples-macos-beta:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN_BETA}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run doc tests
+        run: cargo test --examples
+
+  test-examples-macos-msrv:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN_MSRV}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run doc tests
+        run: cargo test --examples
+
+  test-examples-macos:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run doc tests
+        run: cargo test --examples
+
+  cargo-hack:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+      - name: install cargo-hack
+        uses: taiki-e/install-action@cargo-hack
+      - name: cargo hack check
+        run: cargo hack check --each-feature --no-dev-deps
+
+  dependencies-are-sorted:
+    needs: [check, check-msrv, check-all-features]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{env.RUST_TOOLCHAIN}}
+      - uses: Swatinem/rust-cache@v2
+      - name: Install cargo-sort
+        run: |
+          cargo install cargo-sort
+      - name: Check dependency tables
+        working-directory: .
+        run: |
+          cargo sort --grouped --check

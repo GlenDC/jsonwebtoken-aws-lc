@@ -1,6 +1,15 @@
-# jsonwebtoken
+# jsonwebtoken-aws-lc
 
-[API documentation on docs.rs](https://docs.rs/jsonwebtoken/)
+[API documentation on docs.rs](https://docs.rs/jsonwebtoken-aws-lc/)
+
+Temporary fork of <https://github.com/Keats/jsonwebtoken/tree/v9.3.0>
+
+- swap ring with aws-lc-rs
+- remove wasm32 support (feel free to contribute it)
+
+Goal is not to have a permanent fork,
+but instead to provide a tmp unblocker for people already
+switching to aws-lc-rs given rustls et al made that move clear.
 
 See [JSON Web Tokens](https://en.wikipedia.org/wiki/JSON_Web_Token) for more information on what JSON Web Tokens are.
 
@@ -8,9 +17,9 @@ See [JSON Web Tokens](https://en.wikipedia.org/wiki/JSON_Web_Token) for more inf
 Add the following to Cargo.toml:
 
 ```toml
-jsonwebtoken = "9"
+jsonwebtoken-aws-lc = "9"
 # If you do not need pem decoding, you can disable the default feature `use_pem` that way:
-# jsonwebtoken = {version = "9", default-features = false }
+# jsonwebtoken-aws-lc = {version = "9", default-features = false }
 serde = {version = "1.0", features = ["derive"] }
 ```
 
@@ -39,7 +48,7 @@ Complete examples are available in the examples directory: a basic one and one w
 In terms of imports and structs:
 ```rust
 use serde::{Serialize, Deserialize};
-use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey};
+use jsonwebtoken_aws_lc::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey};
 
 /// Our claims struct, it needs to derive `Serialize` and/or `Deserialize`
 #[derive(Debug, Serialize, Deserialize)]
@@ -81,7 +90,7 @@ let mut header = Header::new(Algorithm::HS512);
 header.kid = Some("blabla".to_owned());
 let token = encode(&header, &my_claims, &EncodingKey::from_secret("secret".as_ref()))?;
 ```
-Look at `examples/custom_header.rs` for a full working example.
+Look at `examples/custom_header.rs` for a  working example.
 
 ### Encoding
 
@@ -147,7 +156,7 @@ If your key is in PEM format, it is better performance wise to generate the `Dec
 something similar and reuse it.
 
 ### Convert SEC1 private key to PKCS8
-`jsonwebtoken` currently only supports PKCS8 format for private EC keys. If your key has `BEGIN EC PRIVATE KEY` at the top,
+`jsonwebtoken-aws-lc` currently only supports PKCS8 format for private EC keys. If your key has `BEGIN EC PRIVATE KEY` at the top,
 this is a SEC1 type and can be converted to PKCS8 like so:
 
 ```bash
@@ -167,4 +176,4 @@ you can add some leeway to the `iat`, `exp`, and `nbf` validation by setting the
 
 Last but not least, you will need to set the algorithm(s) allowed for this token if you are not using `HS256`.
 
-Look at `examples/validation.rs` for a full working example.
+Look at `examples/validation.rs` for a  working example.

@@ -1,12 +1,15 @@
 [package]
-name = "jsonwebtoken"
+name = "jsonwebtoken-aws-lc"
 version = "9.3.0"
-authors = ["Vincent Prouillet <hello@vincentprouillet.com>"]
+authors = [
+    "Vincent Prouillet <hello@vincentprouillet.com>",
+    "Glen Henri J. De Cauwsemaecker <glen@plabayo.tech>"
+]
 license = "MIT"
 readme = "README.md"
 description = "Create and decode JWTs in a strongly typed way."
-homepage = "https://github.com/Keats/jsonwebtoken"
-repository = "https://github.com/Keats/jsonwebtoken"
+homepage = "https://github.com/glendc/jsonwebtoken-aws-lc"
+repository = "https://github.com/glendc/jsonwebtoken-aws-lc"
 keywords = ["jwt", "api", "token", "jwk"]
 edition = "2021"
 include = [
@@ -20,32 +23,17 @@ include = [
 rust-version = "1.73.0"
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
+aws-lc-rs = { version = "1.8.1", default-features = false, features = ["aws-lc-sys"] }
 base64 = "0.22"
 # For PEM decoding
 pem = { version = "3", optional = true }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 simple_asn1 = { version = "0.6", optional = true }
 
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-ring = { version = "0.17.4", features = ["std"] }
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-js-sys = "0.3"
-ring = { version = "0.17.4", features = ["std", "wasm32_unknown_unknown_js"] }
-
 [dev-dependencies]
-wasm-bindgen-test = "0.3.1"
-
-[target.'cfg(not(all(target_arch = "wasm32", not(any(target_os = "emscripten", target_os = "wasi")))))'.dev-dependencies]
-# For the custom time example
-time = "0.3"
 criterion = "0.4"
-
-[target.'cfg(all(target_arch = "wasm32", not(any(target_os = "emscripten", target_os = "wasi"))))'.dev-dependencies]
-# For the custom time example
-time = { version = "0.3", features = ["wasm-bindgen"] }
-criterion = { version = "0.4", default-features = false }
+time = "0.3"
 
 [features]
 default = ["use_pem"]

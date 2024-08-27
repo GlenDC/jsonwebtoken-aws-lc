@@ -1,4 +1,4 @@
-use ring::signature;
+use aws_lc_rs::signature;
 
 use crate::algorithms::Algorithm;
 use crate::errors::Result;

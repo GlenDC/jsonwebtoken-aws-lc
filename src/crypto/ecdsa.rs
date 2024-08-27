@@ -1,4 +1,5 @@
-use ring::{rand, signature};
+use aws_lc_rs::rand::SystemRandom;
+use aws_lc_rs::signature;
 
 use crate::algorithms::Algorithm;
 use crate::errors::Result;
@@ -31,8 +32,8 @@ pub fn sign(
     key: &[u8],
     message: &[u8],
 ) -> Result<String> {
-    let rng = rand::SystemRandom::new();
-    let signing_key = signature::EcdsaKeyPair::from_pkcs8(alg, key, &rng)?;
+    let signing_key = signature::EcdsaKeyPair::from_pkcs8(alg, key)?;
+    let rng = SystemRandom::new(); // aws-lc-rs is ring compatible in fn signature, but ignores the random...
     let out = signing_key.sign(&rng, message)?;
     Ok(b64_encode(out))
 }

@@ -1,5 +1,5 @@
-use ring::constant_time::verify_slices_are_equal;
-use ring::{hmac, signature};
+use aws_lc_rs::constant_time::verify_slices_are_equal;
+use aws_lc_rs::{hmac, signature};
 
 use crate::algorithms::Algorithm;
 use crate::decoding::{DecodingKey, DecodingKeyKind};

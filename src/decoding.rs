@@ -242,7 +242,7 @@ fn verify_signature<'a>(
 ///
 /// ```rust
 /// use serde::{Deserialize, Serialize};
-/// use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
+/// use jsonwebtoken_aws_lc::{decode, DecodingKey, Validation, Algorithm};
 ///
 /// #[derive(Debug, Serialize, Deserialize)]
 /// struct Claims {
@@ -276,7 +276,7 @@ pub fn decode<T: DeserializeOwned>(
 /// If the token has an invalid format (ie 3 parts separated by a `.`), it will return an error.
 ///
 /// ```rust
-/// use jsonwebtoken::decode_header;
+/// use jsonwebtoken_aws_lc::decode_header;
 ///
 /// let token = "a.jwt.token".to_string();
 /// let header = decode_header(&token);

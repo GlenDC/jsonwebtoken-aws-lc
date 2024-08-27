@@ -1,12 +1,11 @@
-use jsonwebtoken::{
+use jsonwebtoken_aws_lc::{
     crypto::{sign, verify},
     Algorithm, DecodingKey, EncodingKey,
 };
 use serde::{Deserialize, Serialize};
-use wasm_bindgen_test::wasm_bindgen_test;
 
 #[cfg(feature = "use_pem")]
-use jsonwebtoken::{decode, encode, Header, Validation};
+use jsonwebtoken_aws_lc::{decode, encode, Header, Validation};
 #[cfg(feature = "use_pem")]
 use time::OffsetDateTime;
 
@@ -18,7 +17,6 @@ pub struct Claims {
 }
 
 #[test]
-#[wasm_bindgen_test]
 fn round_trip_sign_verification_pk8() {
     let privkey = include_bytes!("private_ed25519_key.pk8");
     let pubkey = include_bytes!("public_ed25519_key.pk8");
@@ -33,7 +31,6 @@ fn round_trip_sign_verification_pk8() {
 
 #[cfg(feature = "use_pem")]
 #[test]
-#[wasm_bindgen_test]
 fn round_trip_sign_verification_pem() {
     let privkey_pem = include_bytes!("private_ed25519_key.pem");
     let pubkey_pem = include_bytes!("public_ed25519_key.pem");
@@ -52,7 +49,6 @@ fn round_trip_sign_verification_pem() {
 
 #[cfg(feature = "use_pem")]
 #[test]
-#[wasm_bindgen_test]
 fn round_trip_claim() {
     let privkey_pem = include_bytes!("private_ed25519_key.pem");
     let pubkey_pem = include_bytes!("public_ed25519_key.pem");
@@ -78,7 +74,6 @@ fn round_trip_claim() {
 
 #[cfg(feature = "use_pem")]
 #[test]
-#[wasm_bindgen_test]
 fn ed_x() {
     let privkey = include_str!("private_ed25519_key.pem");
     let my_claims = Claims {
@@ -104,9 +99,8 @@ fn ed_x() {
 
 #[cfg(feature = "use_pem")]
 #[test]
-#[wasm_bindgen_test]
 fn ed_jwk() {
-    use jsonwebtoken::jwk::Jwk;
+    use jsonwebtoken_aws_lc::jwk::Jwk;
     use serde_json::json;
 
     let privkey = include_str!("private_ed25519_key.pem");

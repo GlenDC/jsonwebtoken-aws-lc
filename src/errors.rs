@@ -8,7 +8,7 @@ pub(crate) fn new_error(kind: ErrorKind) -> Error {
     Error(Box::new(kind))
 }
 
-/// A type alias for `Result<T, jsonwebtoken::errors::Error>`.
+/// A type alias for `Result<T, jsonwebtoken_aws_lc::errors::Error>`.
 pub type Result<T> = result::Result<T, Error>;
 
 /// An error that can occur when encoding/decoding JWTs
@@ -77,7 +77,7 @@ pub enum ErrorKind {
     /// Some of the text was invalid UTF-8
     Utf8(::std::string::FromUtf8Error),
     /// Something unspecified went wrong with crypto
-    Crypto(::ring::error::Unspecified),
+    Crypto(::aws_lc_rs::error::Unspecified),
 }
 
 impl StdError for Error {
@@ -159,14 +159,14 @@ impl From<::std::string::FromUtf8Error> for Error {
     }
 }
 
-impl From<::ring::error::Unspecified> for Error {
-    fn from(err: ::ring::error::Unspecified) -> Error {
+impl From<::aws_lc_rs::error::Unspecified> for Error {
+    fn from(err: ::aws_lc_rs::error::Unspecified) -> Error {
         new_error(ErrorKind::Crypto(err))
     }
 }
 
-impl From<::ring::error::KeyRejected> for Error {
-    fn from(_err: ::ring::error::KeyRejected) -> Error {
+impl From<::aws_lc_rs::error::KeyRejected> for Error {
+    fn from(_err: ::aws_lc_rs::error::KeyRejected) -> Error {
         new_error(ErrorKind::InvalidEcdsaKey)
     }
 }
@@ -179,12 +179,9 @@ impl From<ErrorKind> for Error {
 
 #[cfg(test)]
 mod tests {
-    use wasm_bindgen_test::wasm_bindgen_test;
-
     use super::*;
 
     #[test]
-    #[wasm_bindgen_test]
     fn test_error_rendering() {
         assert_eq!(
             "InvalidAlgorithmName",

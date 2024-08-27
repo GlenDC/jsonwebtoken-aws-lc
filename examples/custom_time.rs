@@ -1,4 +1,4 @@
-use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken_aws_lc::{Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use time::{Duration, OffsetDateTime};
 
@@ -63,7 +63,7 @@ mod jwt_numeric_date {
         const EXPECTED_TOKEN: &str = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJDdXN0b20gT2Zmc2V0RGF0ZVRpbWUgc2VyL2RlIiwiaWF0IjowLCJleHAiOjMyNTAzNjgwMDAwfQ.BcPipupP9oIV6uFRI6Acn7FMLws_wA3oo6CrfeFF3Gg";
 
         use super::super::{Claims, SECRET};
-        use jsonwebtoken::{
+        use jsonwebtoken_aws_lc::{
             decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation,
         };
         use time::{Duration, OffsetDateTime};
@@ -138,7 +138,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let claims = Claims::new(sub, iat, exp);
 
-    let token = jsonwebtoken::encode(
+    let token = jsonwebtoken_aws_lc::encode(
         &Header::default(),
         &claims,
         &EncodingKey::from_secret(SECRET.as_ref()),
@@ -146,7 +146,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("serialized token: {}", &token);
 
-    let token_data = jsonwebtoken::decode::<Claims>(
+    let token_data = jsonwebtoken_aws_lc::decode::<Claims>(
         &token,
         &DecodingKey::from_secret(SECRET.as_ref()),
         &Validation::new(Algorithm::HS256),
